@@ -59,5 +59,30 @@ namespace TestProject1
 
             isAnimalDeleted.Should().BeFalse($"Animal shouldnt be deleted from database because animal with id{animalId} not exists");
         }
+
+        [Fact]
+        public void Should_update_animal_in_databaseTest()
+        {
+            var animalOperation = new AnimalOperations(_database);
+            var animal = new Animal(0, "wewe", "pepe", 1, "wewe", "gut");
+
+            bool isAnimalAdded = animalOperation.AddAnimal(animal);
+            isAnimalAdded.Should().BeTrue("Animal should be added to database");
+
+            int animalId = animalOperation.FindLastAddedAnimal();
+            animalId.Should().BeGreaterThan(0, "Animal ID should be greater than 0");
+
+            var updatedAnimal = new Animal
+            {
+                Type = "newType",
+                Name = "newName"
+            };
+
+            bool isAnimalUpdated = animalOperation.UpdateInformationAboutAnimal(animalId, updatedAnimal);
+            isAnimalUpdated.Should().BeTrue("Animal should be updated in the database");
+
+            //bool isAnimalDeleted = animalOperation.DeleteAnimal(animalId);
+            //isAnimalDeleted.Should().BeTrue("Animal should be deleted from test database");
+        }
     }
 }

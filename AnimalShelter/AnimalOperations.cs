@@ -94,5 +94,54 @@ namespace AnimalShelter
             return animals;
         }
 
+        public bool UpdateInformationAboutAnimal(int animalId, Animal newAnimal)
+        {
+            // Get the current animal data from the database
+            string selectQuery = "SELECT * FROM ANIMALS WHERE Id = @Id";
+            var selectParameters = new[]
+            {
+                new NpgsqlParameter("@Id", animalId),
+            };
+
+            Animal currentAnimal = null;
+            using (var reader = _database.ExecuteQuery(selectQuery, selectParameters))
+            {
+                if (reader != null && reader.Read())
+                {
+                    currentAnimal = new Animal
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Type = reader.GetString(reader.GetOrdinal("Type")),
+                        Name = reader.IsDBNull(reader.GetOrdinal("Name")) ? null : reader.GetString(reader.GetOrdinal("Name")),
+                        Age = reader.IsDBNull(reader.GetOrdinal("Age")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("Age")),
+                        Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                        HealthStatus = reader.IsDBNull(reader.GetOrdinal("HealthStatus")) ? null : reader.GetString(reader.GetOrdinal("HealthStatus")),
+                    };
+                }
+            }
+
+            if (currentAnimal == null)
+            {
+                Console.WriteLine($"Animal with ID {animalId} does not exist.");
+                return false;
+            }
+
+            // Get the updated animal object
+            var updatedAnimal = currentAnimal.GetUpdatedAnimal(newAnimal);
+
+            // Update the database with the new values
+            string updateQuery = "UPDATE ANIMALS SET Type = @Type, Name = @Name, Age = @Age, Breed = @Breed, HealthStatus = @HealthStatus WHERE Id = @Id";
+            var updateParameters = new[]
+            {
+                new NpgsqlParameter("@Type", updatedAnimal.Type),
+                new NpgsqlParameter("@Name", updatedAnimal.Name),
+                new NpgsqlParameter("@Age", updatedAnimal.Age),
+                new NpgsqlParameter("@Breed", updatedAnimal.Breed),
+                new NpgsqlParameter("@HealthStatus", updatedAnimal.HealthStatus),
+                new NpgsqlParameter("@Id", updatedAnimal.Id),
+            };
+
+            return _database.ExecuteNonQuery(updateQuery, updateParameters);
+        }
     }
 }

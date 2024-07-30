@@ -33,5 +33,18 @@ namespace AnimalShelter
         {
             return $"Id: {Id} Type: {Type} Name: {Name} Age: {Age} Breed: {Breed} HealthStatus: {HealthStatus}";
         }
+
+        public Animal GetUpdatedAnimal(Animal newAnimal)
+        {
+            return new Animal
+            {
+                Id = this.Id,
+                Type = string.IsNullOrEmpty(newAnimal.Type) ? this.Type : newAnimal.Type,
+                Name = string.IsNullOrEmpty(newAnimal.Name) ? this.Name : newAnimal.Name,
+                Age = newAnimal.Age ?? this.Age,
+                Breed = string.IsNullOrEmpty(newAnimal.Breed) ? this.Breed : newAnimal.Breed,
+                HealthStatus = string.IsNullOrEmpty(newAnimal.HealthStatus) ? this.HealthStatus : newAnimal.HealthStatus
+            };
+        }
     }
 }
