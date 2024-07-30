@@ -64,10 +64,8 @@ namespace AnimalShelter
             string query = "SELECT * FROM ANIMALS";
             var animals = new List<Animal>();
 
-            // Open connection and execute query
             using (var reader = _database.ExecuteQuery(query))
             {
-                // Check if reader is not null and open
                 if (reader != null)
                 {
                     // Read all rows from the reader
