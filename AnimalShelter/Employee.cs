@@ -12,6 +12,11 @@ namespace AnimalShelter
         public string Login { get; set; }
         public string Password { get; set; }
 
-        
+        public Employee(int id, string login, string password)
+        {
+            Id = id;
+            Login = login;
+            Password = password;
+        }
     }
 }

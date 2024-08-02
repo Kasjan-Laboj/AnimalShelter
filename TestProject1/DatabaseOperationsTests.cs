@@ -39,7 +39,7 @@ namespace TestProject1
             bool isAnimalAdded = animalOperation.AddAnimal(animal);
             isAnimalAdded.Should().BeTrue("Animal should be added to database");
 
-            int animalId = animalOperation.FindLastAddedAnimal();
+            int animalId = animalOperation.FindIdOfLastAddedAnimal();
 
             bool isAnimalDeleted = animalOperation.DeleteAnimal(animalId);
 
@@ -69,7 +69,7 @@ namespace TestProject1
             bool isAnimalAdded = animalOperation.AddAnimal(animal);
             isAnimalAdded.Should().BeTrue("Animal should be added to database");
 
-            int animalId = animalOperation.FindLastAddedAnimal();
+            int animalId = animalOperation.FindIdOfLastAddedAnimal();
             animalId.Should().BeGreaterThan(0, "Animal ID should be greater than 0");
 
             var updatedAnimal = new Animal
@@ -83,6 +83,16 @@ namespace TestProject1
 
             //bool isAnimalDeleted = animalOperation.DeleteAnimal(animalId);
             //isAnimalDeleted.Should().BeTrue("Animal should be deleted from test database");
+        }
+
+        [Fact]
+        public void User_can_login_to_program()
+        {
+            var employeeOperation = new EmployeeOperations(_database);
+
+            bool isLogged = employeeOperation.Login("abc","123");
+
+            isLogged.Should().BeTrue();
         }
     }
 }

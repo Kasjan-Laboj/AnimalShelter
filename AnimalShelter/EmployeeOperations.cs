@@ -19,7 +19,7 @@ namespace AnimalShelter
 
         public bool Login(string login, string password)
         {
-            string query = "SELECT COUNT(*) FROM EMPLOYEES WHERE LOGIN = @LOGIN AND PASSWORD = @PASSWORD";
+            string query = "SELECT COUNT(*) FROM employees WHERE login = @login AND password = @password";
 
             var parameters = new[]
             {
@@ -27,8 +27,9 @@ namespace AnimalShelter
                 new NpgsqlParameter("@password", password)
             };
 
+            int result = _database.ExecuteScalar(query, parameters);
 
-            return _database.ExecuteNonQuery(query, parameters);
+            return result > 0;
         }
     }
 }

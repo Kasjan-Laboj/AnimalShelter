@@ -15,7 +15,7 @@ namespace AnimalShelter
         public string Breed { get; set; }
         public string? HealthStatus { get; set; }
 
-        public Animal(int id, string name, string type, int age,string breed, string healthStatus)
+        public Animal(int id, string type, string name, int age,string breed, string healthStatus)
         {
             Id = id;
             Type = type;

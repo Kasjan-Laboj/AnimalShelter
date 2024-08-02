@@ -35,7 +35,6 @@ namespace AnimalShelter
         public bool DeleteAnimal(int animalIdToDelete)
         {
             string query = "DELETE FROM ANIMALS WHERE Id = @Id";
-            //Animal animal = new Animal();
 
             var parameters = new[]
             {
@@ -52,7 +51,7 @@ namespace AnimalShelter
             return isDeleted;
         }
 
-        public int FindLastAddedAnimal()
+        public int FindIdOfLastAddedAnimal()
         {
             string query = "SELECT MAX(ID) FROM ANIMALS";
 
