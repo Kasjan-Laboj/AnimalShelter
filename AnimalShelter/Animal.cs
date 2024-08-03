@@ -11,6 +11,7 @@ namespace AnimalShelter
         public int Id { get; set; }
         public string Type { get; set; }
         public string? Name { get; set; }
+        //change to datetime
         public int? Age { get; set; }
         public string Breed { get; set; }
         public string? HealthStatus { get; set; }

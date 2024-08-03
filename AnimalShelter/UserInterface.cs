@@ -19,159 +19,194 @@ namespace AnimalShelter
             _animalOperations = new AnimalOperations(_database);
         }
 
-
         public void Program()
         {
-            Console.WriteLine("Staff shelter access");
+            int id = 0;
+            int age, idToOperate, choice;
+            string type, name, breed, healthStatus, login, password;
+            bool isLogged;
+
+            do
+            {
+                Console.WriteLine("Staff shelter access");
+
+                GetLoginAndPasswordFromUser(out login, out password);
+
+                isLogged = _employeeOperations.Login(login, password);
+
+                if (!isLogged)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Incorrect data");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Thread.Sleep(1000);
+                    Console.Clear();
+                    continue;
+                }
+
+                while (isLogged)
+                {
+                    DisplayOptions();
+
+                    while (!int.TryParse(Console.ReadLine(), out choice))
+                    {
+                        Console.WriteLine("Choose operation from 1-7");
+                    }
+
+                    switch (choice)
+                    {
+                        case 1:
+                            var animalList = new List<Animal>();
+                            animalList = _animalOperations.GetAllAnimals();
+
+                            foreach (var an in animalList)
+                            {
+                                Console.WriteLine(an);
+                            }
+
+                            Console.WriteLine("Press enter to continue");
+                            Console.ReadKey();
+                            break;
+                        case 2:
+                            GetAllVariablesForOperationOnAnimal(out type, out name, out age, out breed, out healthStatus);
+
+                            var animal = new Animal(id, type, name, age, breed, healthStatus);
+
+                            if (_animalOperations.AddAnimal(animal))
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Operation successfully");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Something goes wrong try again");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Thread.Sleep(1000);
+                            }
+
+                            break;
+                        case 3:
+                            Console.WriteLine("Enter the ID of the animal to be deleted");
+
+                            GetIdOfAnimalToOperate(out idToOperate);
+
+                            if (_animalOperations.DeleteAnimal(idToOperate))
+                            {
+                                Console.WriteLine("Operation successfully");
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Press Enter to continue");
+                                Console.ReadKey();
+                            }
+                            break;
+                        case 4:
+                            Console.WriteLine("Choose animal id to update");
+
+                            GetIdOfAnimalToOperate(out idToOperate);
+
+                            Console.WriteLine("Leave empty space to save old data");
+
+                            GetAllVariablesForOperationOnAnimal(out type, out name, out age, out breed, out healthStatus);
+
+                            animal = new Animal()
+                            {
+                                Type = type,
+                                Name = name,
+                                Age = age,
+                                Breed = breed,
+                                HealthStatus = healthStatus
+                            };
+
+                            if (_animalOperations.UpdateInformationAboutAnimal(idToOperate, animal))
+                            {
+                                DisplayInformation("Operation successfully",1000);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Press Enter to continue");
+                                Console.ReadKey();
+                            }
+
+                            break;
+                        case 5:
+                            Console.WriteLine($"Last id of added animal is: {_animalOperations.FindIdOfLastAddedAnimal()}");
+
+                            Console.WriteLine("Press enter to continue");
+                            Console.ReadKey();
+                            break;
+                        case 6:
+                            DisplayInformation("Loggin out...",1000);
+                            isLogged = false;
+                            continue;
+                        //break;
+                        case 7:
+                            DisplayInformation("Closing the program...", 1000);
+                            Environment.Exit(0);
+                            break;
+                    }
+                }
+
+                Console.Clear();
+            } while (true);
+        }
+
+        private void GetIdOfAnimalToOperate(out int idToOperate)
+        {
+            while (!int.TryParse(Console.ReadLine(), out idToOperate) || idToOperate < 0)
+            {
+                Console.WriteLine("Id cannot be negative");
+            }
+        }
+        private void DisplayInformation(string text, int threadLength)
+        {
+            Console.WriteLine($"{text}");
+            Thread.Sleep(threadLength);
+        }
+        private void GetAllVariablesForOperationOnAnimal(out string type, out string name, out int age, out string breed, out string healthStatus)
+        {
+            Console.WriteLine("Enter type of animal");
+            type = Console.ReadLine();
+            Console.WriteLine("Enter name of animal");
+            name = Console.ReadLine();
+            Console.WriteLine("Enter age of animal");
+            //dry
+            while (!int.TryParse(Console.ReadLine(), out age) || age < 0 || age > 15)
+            {
+                Console.WriteLine("Enter correct age");
+            }
+            Console.WriteLine("Enter breed of animal");
+            breed = Console.ReadLine();
+            Console.WriteLine("Enter health status of animal");
+            healthStatus = Console.ReadLine();
+        }
+        private void GetLoginAndPasswordFromUser(out string login, out string password)
+        {
             Console.Write("Enter login: ");
-            string login = Console.ReadLine();
+            login = Console.ReadLine();
             Console.Write("Enter password: ");
-            string password = Console.ReadLine();
+            password = Console.ReadLine();
+        }
 
-            //bool isLogged = _employeeOperations.Login(login, password);
+        private void DisplayOptions()
+        {
+            Console.Clear();
+            Console.WriteLine("Welcome\n-----------------");
 
-            if (_employeeOperations.Login(login, password))
-            {
-                Console.WriteLine("Welcome");
+            Console.WriteLine("Choose operation:\n");
 
-                Console.WriteLine("Choose operation");
-
-                Console.WriteLine(
-                    "1-Display all animals" +
-                    "2-Add animal" +
-                    "3-Delete animal" +
-                    "4-Update animal" +
-                    "5-Display id of newest animal" +
-                    "6-Log out" +
-                    "7-Close program");
-
-
-                int choice;
-                while (!int.TryParse(Console.ReadLine(), out choice))
-                {
-                    Console.WriteLine("Choose operation from 1-7");
-                }
-
-                int id = 0;
-                int age, idToUpdate;
-                string type, name, breed, healthStatus;
-
-                switch (choice)
-                {
-                    case 1:
-                        var animalList = new List<Animal>();
-                        animalList = _animalOperations.GetAllAnimals();
-
-                        foreach (var an in animalList)
-                        {
-                            Console.WriteLine(an);
-                        }
-                        break;
-                    case 2:
-                        //create method for getting all vars
-                        Console.WriteLine("Enter type of animal");
-                        type = Console.ReadLine();
-                        Console.WriteLine("Enter name of animal");
-                        name = Console.ReadLine();
-                        Console.WriteLine("Enter age of animal");
-                        while (!int.TryParse(Console.ReadLine(), out age) || age > 0 || age < 15)
-                        {
-                            Console.WriteLine("Enter correct age");
-                        }
-                        Console.WriteLine("Enter breed of animal");
-                        breed = Console.ReadLine();
-                        Console.WriteLine("Enter health status of animal");
-                        healthStatus = Console.ReadLine();
-
-                        var animal = new Animal(id, type, name, age, breed, healthStatus);
-
-                        _animalOperations.AddAnimal(animal);
-                        if (_animalOperations.AddAnimal(animal))
-                        {
-                            Console.WriteLine("Operation successfully");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Something goes wrong try again");
-                        }
-
-                        break;
-                    case 3:
-                        Console.WriteLine("Enter the ID of the animal to be deleted");
-                        int idToDelete;
-                        //add metod to check if animal exists with given id
-                        while (!int.TryParse(Console.ReadLine(), out idToDelete) || idToDelete > 0)
-                        {
-                            Console.WriteLine("Id cannot be negative");
-                        }
-
-                        if (_animalOperations.DeleteAnimal(idToDelete))
-                        {
-                            Console.WriteLine("Operation successfully");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Something goes wrong try again");
-                        }
-
-                        break;
-                    case 4:
-                        Console.WriteLine("Choose animal id to update");
-                        //add metod to check if animal exists with given id
-                        while (!int.TryParse(Console.ReadLine(), out idToUpdate) || idToUpdate > 0)
-                        {
-                            Console.WriteLine("Id cannot be negative");
-                        }
-
-                        Console.WriteLine("LEAVE BLANK (CLICK ENTER) TO SAVE PREVIOUS INFORMATION");
-                        //create method for getting all vars
-                        Console.WriteLine("Enter type of animal");
-                        type = Console.ReadLine();
-                        Console.WriteLine("Enter name of animal");
-                        name = Console.ReadLine();
-                        Console.WriteLine("Enter age of animal");
-                        while (!int.TryParse(Console.ReadLine(), out age) || age > 0 || age < 15)
-                        {
-                            Console.WriteLine("Enter correct age");
-                        }
-                        Console.WriteLine("Enter breed of animal");
-                        breed = Console.ReadLine();
-                        Console.WriteLine("Enter health status of animal");
-                        healthStatus = Console.ReadLine();
-
-                        animal = new Animal();
-
-                        if (_animalOperations.UpdateInformationAboutAnimal(idToUpdate, animal))
-                        {
-                            Console.WriteLine("Operation successfully");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Something goes wrong try again");
-                        }
-
-                        break;
-                    case 5:
-                        Console.WriteLine($"Last id of added animal is: {_animalOperations.FindIdOfLastAddedAnimal()}");
-                        break;
-                    case 6:
-                        //isLogged = false;
-                        break;
-                    case 7:
-                        Console.WriteLine("Closing the program...");
-                        Thread.Sleep(1000);
-                        Environment.Exit(0);
-                        break;
-                }
-
-            }
-            else
-            {
-                Console.WriteLine("Try again");
-            }
-
-
-
+            Console.WriteLine(
+                "1-Display all animals\n" +
+                "2-Add animal\n" +
+                "3-Delete animal\n" +
+                "4-Update animal\n" +
+                "5-Display id of newest animal\n" +
+                "6-Log out\n" +
+                "7-Close program");
         }
     }
 }
